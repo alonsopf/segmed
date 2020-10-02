@@ -15,6 +15,7 @@ type Configuration struct {
   TWILIO_TOKEN   string
   TWILIO_NUMBER   string
   UNSPLASH_ACCESS_KEY string
+  UNSPLASH_SECRET_KEY string
   SITE_URL  string
 }
 
