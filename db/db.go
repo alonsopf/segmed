@@ -6,6 +6,7 @@ import (
 	"time"
 	"errors"
 	"strings"
+	"fmt"
 	goutil "github.com/alonsopf/segmed/goutil"
 	config "github.com/alonsopf/segmed/config"
 )
@@ -29,6 +30,7 @@ func Login(email, pass string) (string, error) {//if success, return token for c
 	configuration := config.GetConfig("prod")
 	db, _ := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
 	rows, _ := db.Query(`SELECT idUsuario, name, accountType FROM users WHERE email = '`+email+`' AND pass = '`+pass+`'`)
+	fmt.Println(`SELECT idUsuario, name, accountType FROM users WHERE email = '`+email+`' AND pass = '`+pass+`'`)
 	defer rows.Close()
 	idUsuario := 0
 	name := ""
