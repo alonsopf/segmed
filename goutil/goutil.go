@@ -107,7 +107,7 @@ type Photos struct {
 
 func SearchPhotosByWord(word string) (*map[int]*Photos, error) {
 	configuration := config.GetConfig("prod")
-	req, : := http.NewRequest("GET", "https://api.unsplash.com/photos/random/?query="+word+"&client_id="+configuration.UNSPLASH_ACCESS_KEY, nil)
+	req, err := http.NewRequest("GET", "https://api.unsplash.com/photos/random/?query="+word+"&client_id="+configuration.UNSPLASH_ACCESS_KEY, nil)
 	if err != nil {
 		return nil, err
 	}
