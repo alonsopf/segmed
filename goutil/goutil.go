@@ -2,8 +2,10 @@ package goutil
 import (
 	"crypto/sha512"
 	"encoding/base64"
-	"golang.org/x/oauth2"
 	"strconv"
+	"bytes"
+	"encoding/json"
+	"net/http"
 	"fmt"
 	config "github.com/alonsopf/segmed/config"
 )
@@ -124,8 +126,9 @@ func SearchPhotosByWord(word string) (*map[int]*Photos, error) {
 	fmt.Println(s2)
 	json.Unmarshal([]byte(s2), &result)
 	PhotosList := make(map[int]*Photos)
+	count := 0
 	for _, photo := range result {
-		PhotosList[count] = &Photos{photo.ID, photo.Urls.Regular, photo.Description.(string), photo.AltDescription, strconv.Itoa(photo.Likes), photo.User.Name}
+		PhotosList[count] = &Photos{photo.ID, photo.Urls.Regular, photo.Description, photo.AltDescription, strconv.Itoa(photo.Likes), photo.User.Name}
         count++
     }
 	return &PhotosList, nil
