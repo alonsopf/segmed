@@ -39,7 +39,7 @@ func login(email, pass string) (string, error) {//if success, return token for c
 		expiredAtString := strconv.FormatInt(expiredAt, 10)
 		tm := time.Unix(currentTime, 0)
 		dateString := tm.Format(time.RFC3339)
-		cryptoTextHashToken := goutil.tosha512(email+"-"+dateString)	
+		cryptoTextHashToken := goutil.tosha512([]byte(email+"-"+dateString))	
 		db.Exec(`DELETE FROM tokens WHERE idUsuario = `+strconv.Itoa(idUsuario)+``)
 		stmtInsertToken, _ := db.Prepare("INSERT tokens SET idUsuario=?,token=?,expiredAt=?")
 		cryptoTextHashToken = strings.Replace(cryptoTextHashToken, "+", "0", -1)

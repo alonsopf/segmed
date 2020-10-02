@@ -6,6 +6,6 @@ import (
 
 func tosha512(str []byte) string {
 	hasher := sha512.New()
-    hasher.Write(passwordPrimo)
+    hasher.Write(str)
 	return base64.StdEncoding.EncodeToString(hasher.Sum(nil))
 }
