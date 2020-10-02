@@ -9,7 +9,7 @@ import (
 	goutil "github.com/alonsopf/segmed/goutil"
 	config "github.com/alonsopf/segmed/config"
 )
-func checkToken(token string) (int, error) {
+func CheckToken(token string) (int, error) {
 	configuration := config.GetConfig("prod")
 	db, _ := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
 	currentTime := int64(time.Now().Unix())			
@@ -25,7 +25,7 @@ func checkToken(token string) (int, error) {
 	}
 	return -1, errors.New("token does not exist")
 }
-func login(email, pass string) (string, error) {//if success, return token for cookie
+func Login(email, pass string) (string, error) {//if success, return token for cookie
 	configuration := config.GetConfig("prod")
 	db, _ := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
 	rows, _ := db.Query(`SELECT idUsuario, name, accountType FROM users WHERE email = '`+email+`' AND pass = '`+pass+`'`)
