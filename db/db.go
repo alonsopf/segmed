@@ -26,7 +26,7 @@ func checkToken(token string) (int, error) {
 	return -1, errors.New("token does not exist")
 }
 func login(email, pass string) (string, error) {//if success, return token for cookie
-	configuration = config.GetConfig("prod")
+	configuration := config.GetConfig("prod")
 	db, _ := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
 	rows, _ := db.Query(`SELECT idUsuario, name, accountType FROM users WHERE email = '`+email+`' AND pass = '`+pass+`'`)
 	defer rows.Close()
@@ -40,7 +40,7 @@ func login(email, pass string) (string, error) {//if success, return token for c
 		expiredAtString := strconv.FormatInt(expiredAt, 10)
 		tm := time.Unix(currentTime, 0)
 		dateString := tm.Format(time.RFC3339)
-		cryptoTextHashToken := goutil.tosha512([]byte(email+"-"+dateString))	
+		cryptoTextHashToken := goutil.ToSha512([]byte(email+"-"+dateString))	
 		db.Exec(`DELETE FROM tokens WHERE idUsuario = `+strconv.Itoa(idUsuario)+``)
 		stmtInsertToken, _ := db.Prepare("INSERT tokens SET idUsuario=?,token=?,expiredAt=?")
 		cryptoTextHashToken = strings.Replace(cryptoTextHashToken, "+", "0", -1)
