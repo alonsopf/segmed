@@ -27,7 +27,7 @@ type Photos struct {
 func SearchPhotosByWord(word string) (*map[int]*Photos, error) {
 	configuration := config.GetConfig("prod")
 	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: configuration.UNSPLASH_ACCESS_KEY, SecretKey: configuration:},
+		&oauth2.Token{AccessToken: configuration.UNSPLASH_ACCESS_KEY, SecretKey: configuration.UNSPLASH_SECRET_KEY},
 	)
 	client := oauth2.NewClient(oauth2.NoContext, ts)
 	unsclient := unsplash.New(client)  
