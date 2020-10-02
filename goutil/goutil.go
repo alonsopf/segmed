@@ -121,5 +121,5 @@ func SearchPhotosByWord(word string) (*map[int]*Photos, error, int , int) {
 		PhotosList[count] = &Photos{photo.ID, photo.Urls.Regular, photo.Description, photo.AltDescription, strconv.Itoa(photo.Likes), photo.User.Name}
         count++
     }
-	return &PhotosList, nil
+	return &PhotosList, nil, result.Total, result.TotalPages
 }
