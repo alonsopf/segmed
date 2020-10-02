@@ -14,6 +14,8 @@ type Configuration struct {
   TWILIO_ID   string
   TWILIO_TOKEN   string
   TWILIO_NUMBER   string
+  UNSPLASH_ACCESS_KEY string
+  SITE_URL  string
 }
 
 func GetConfig(params ...string) Configuration {
