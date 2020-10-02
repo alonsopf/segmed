@@ -94,9 +94,9 @@ type Photos struct {
     Photographer string
 }
 
-func SearchPhotosByWord(word string) (*map[int]*Photos, error, int , int) {
+func SearchPhotosByWord(word, page string) (*map[int]*Photos, error, int , int) {
 	configuration := config.GetConfig("prod")
-	view := "https://api.unsplash.com/search/photos/?query="+word+"&client_id="+configuration.UNSPLASH_ACCESS_KEY
+	view := "https://api.unsplash.com/search/photos/?per_page=9&page="+page+"&query="+word+"&client_id="+configuration.UNSPLASH_ACCESS_KEY
 	req, err := http.NewRequest("GET", view , nil)
 	if err != nil {
 		return nil, err, 0, 0
