@@ -5,11 +5,12 @@ import (
 	"strconv"
 	"time"
 	"errors"
-	"github.com/alonsopf/segmed/goutil"
-	"github.com/alonsopf/segmed/config"
+	"strings"
+	goutil "github.com/alonsopf/segmed/goutil"
+	config "github.com/alonsopf/segmed/config"
 )
 func checkToken(token string) (int, error) {
-	configuration = config.GetConfig("prod")
+	configuration := config.GetConfig("prod")
 	db, _ := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
 	currentTime := int64(time.Now().Unix())			
 	tm := strconv.FormatInt(currentTime, 10)		
