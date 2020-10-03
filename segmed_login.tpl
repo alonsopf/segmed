@@ -849,8 +849,8 @@ function entry() {
 	var e=$("#exampleInputEmail").val().trim();
 	if(""!=e){
 		var s=$("#exampleInputPassword").val().trim();
-		""!=s?(s=sha512(s),$.ajax({url:"https://alonsopf.com/segmed.ai/login",dataType:"json",data:{email:e,pass:s},type:"post",async:!0,beforeSend:function(){},complete:function(){},success:function(e){
-			1==e.success?window.location="https://alonsopf.com/segmed.ai/home":swal("mismatch email / password")
+		""!=s?(s=sha512(s),$.ajax({url:"/segmed.ai/login",dataType:"json",data:{email:e,pass:s},type:"post",async:!0,beforeSend:function(){},complete:function(){},success:function(e){
+			1==e.success?window.location="/segmed.ai/home":swal("mismatch email / password")
 			if(e.success==2) {
 				Swal({
 		          html: '<span style="color:#000000">Two factor authentication, please write your full number with country code, without spaces, example: +18261010120<span>',
@@ -897,7 +897,7 @@ function entry() {
 			                complete : function (){$("body").css("cursor","default");}, 
 			                success : function (resp){
 			                    if(resp.success==1) {
-			                    	window.location="https://alonsopf.com/segmed.ai/home";
+			                    	window.location="/segmed.ai/home";
 			                    }else {
 			              			swal("the confirm number does not match");
 			                    }

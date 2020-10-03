@@ -10,8 +10,11 @@ go get github.com/alonsopf/segmed
 ```
 2. execute segmed.sql
 3. fill your prod_config.json with your keys and data
-4. go run alonso.go
-5. test in:  yoururl.com/segmed.ai/
-6. default user: alonsopf.paypal@gmail.com  /  segmedai
-7. default admin user: adam@segmed.ai  /  segmedai
-8. Example in: [https://alonsopf.com/segmed.ai/](https://alonsopf.com/segmed.ai/)
+4. ```bash
+cd $GOPATH/src/github.com/alonsopf/segmed
+```
+5. go run alonso.go
+6. test in:  yoururl.com/segmed.ai/
+7. default user: alonsopf.paypal@gmail.com  /  segmedai
+8. default admin user: adam@segmed.ai  /  segmedai
+9. Example in: [https://alonsopf.com/segmed.ai/](https://alonsopf.com/segmed.ai/)

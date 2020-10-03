@@ -18,10 +18,6 @@ CREATE TABLE `users` (
 
 ALTER TABLE `users` ADD PRIMARY KEY (`idUsuario`);
 ALTER TABLE `users` MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT;
---first user
-INSERT INTO `users` (name,email,confirm,pass,iosToken,androidToken,accountType, cellphone,cellphoneVerified, hashConfirm, hashReset, idFacebook) VALUES ('Fernando Alonso Pecina', 'alonsopf@gmail.com',1,'3OFSSdaMOMMiEJOAuq/uSiZVjpyte2ADF28yOvuEAOqaW20z5npFdkoVPE1YRJ8jowZp4p7PuglekpHolApRcw==','','','1','','','','','');
---admin user
-INSERT INTO `users` (name,email,confirm,pass,iosToken,androidToken,accountType, cellphone,cellphoneVerified, hashConfirm, hashReset, idFacebook) VALUES ('Adam Koszek', 'adam@segmed.ai',1,'3OFSSdaMOMMiEJOAuq/uSiZVjpyte2ADF28yOvuEAOqaW20z5npFdkoVPE1YRJ8jowZp4p7PuglekpHolApRcw==','','','3','','','','','');
 
 CREATE TABLE `tokens` (
   `idUsuario` int(11) NOT NULL,
@@ -47,3 +43,7 @@ CREATE TABLE `sendSMS` (
   `confirm` varchar(7) NOT NULL,
   `timestamp` varchar(30) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+INSERT INTO `users` (name,email,confirm,pass,iosToken,androidToken,accountType, cellphone,cellphoneVerified, hashConfirm, hashReset, idFacebook) VALUES ('Fernando Alonso Pecina', 'alonsopf@gmail.com',1,'3OFSSdaMOMMiEJOAuq/uSiZVjpyte2ADF28yOvuEAOqaW20z5npFdkoVPE1YRJ8jowZp4p7PuglekpHolApRcw==','','','1','','','','','');
+INSERT INTO `users` (name,email,confirm,pass,iosToken,androidToken,accountType, cellphone,cellphoneVerified, hashConfirm, hashReset, idFacebook) VALUES ('Adam Koszek', 'adam@segmed.ai',1,'3OFSSdaMOMMiEJOAuq/uSiZVjpyte2ADF28yOvuEAOqaW20z5npFdkoVPE1YRJ8jowZp4p7PuglekpHolApRcw==','','','3','','','','','');
