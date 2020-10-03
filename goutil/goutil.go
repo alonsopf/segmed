@@ -123,15 +123,16 @@ func SearchPhotosByWord(word, page string) (*[]*Photos, error, int , int) {
 	s2 := buf2.String()
 	json.Unmarshal([]byte(s2), &result)
 	PhotosList := make([]*Photos,0)
-	count := 0
+	//count := 0
 	var desc string
 	for _, photo := range result.Results {
 		desc = ""
 		if photo.Description != nil {
 			desc = photo.Description.(string)
 		}
-		PhotosList[count] = &Photos{photo.ID, photo.Urls.Regular, desc, photo.AltDescription, strconv.Itoa(photo.Likes), photo.User.Name, "0"}
-        count++
+		PhotosList = append(PhotosList, &Photos{photo.ID, photo.Urls.Regular, desc, photo.AltDescription, strconv.Itoa(photo.Likes), photo.User.Name, "0"})
+		//PhotosList[count] = &Photos{photo.ID, photo.Urls.Regular, desc, photo.AltDescription, strconv.Itoa(photo.Likes), photo.User.Name, "0"}
+        //count++
     }
 	return &PhotosList, nil, result.Total, result.TotalPages
 }
