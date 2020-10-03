@@ -10,22 +10,89 @@ import (
 	goutil "github.com/alonsopf/segmed/goutil"
 	config "github.com/alonsopf/segmed/config"
 )
-func CheckToken(token string) (int, error) {
+
+type Users struct {
+	IdUsuario int
+    Name string
+    Email string
+}
+
+type Image struct {
+	IdImage int
+    S3url string
+    LikeTime string
+}
+
+func CheckToken(token string) (int, int, error) {
 	configuration := config.GetConfig("prod")
 	db, _ := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
 	currentTime := int64(time.Now().Unix())			
 	tm := strconv.FormatInt(currentTime, 10)		
-	rows, _ := db.Query(`SELECT idUsuario FROM tokens WHERE token = '`+token+`' AND expiredAt >= `+tm)
+	rows, _ := db.Query(`SELECT idUsuario, accountType FROM tokens WHERE token = '`+token+`' AND expiredAt >= `+tm)
 	idUsuario := 0
+	accountType := 0
 	defer rows.Close()
 	if rows.Next() {
-		rows.Scan(&idUsuario)
+		rows.Scan(&idUsuario, &accountType)
 		db.Close()
-		return idUsuario, nil
+		return idUsuario, accountType, nil
 	}
-	return -1, errors.New("token does not exist")
+	return -1, -1, errors.New("token does not exist")
 }
-func Login(email, pass string) (string, error) {//if success, return token for cookie
+
+func ListImg(idUsuario string) (*map[int]*Users, error) {
+	configuration := config.GetConfig("prod")
+	db, err := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
+	if err != nil {
+		return nil, err
+	}
+	rows, err := db.Query(`SELECT idImage, s3url, likeTime FROM savedImages WHERE idUsuario = `+idUsuario+` AND status = 1 order by idImage asc`)
+	if err != nil {
+		db.Close()
+		return nil, err
+	}
+	ImageList := make(map[int]*Image)
+	idImage := 0
+	s3url := ""
+	likeTime := ""
+	count := 0
+	defer rows.Close()
+	if rows.Next() {
+		rows.Scan(&idImage, &s3url, &likeTime)
+		ImageList[count] = &Users{idImage, s3url, likeTime}
+        count++
+	}
+	db.Close()
+    return ImageList, nil
+}
+
+func ListUsers() (*map[int]*Users, error) {
+	configuration := config.GetConfig("prod")
+	db, err := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
+	if err != nil {
+		return nil, err
+	}
+	rows, err := db.Query(`SELECT idUsuario, name, email FROM users WHERE accountType = '1' order by idUsuario asc`)
+	if err != nil {
+		db.Close()
+		return nil, err
+	}
+	UsersList := make(map[int]*Users)
+	idUsuario := 0
+	name := ""
+	email := ""
+	count := 0
+	defer rows.Close()
+	if rows.Next() {
+		rows.Scan(&idUsuario, &name, &email)
+		UsersList[count] = &Users{idUsuario, name, email}
+        count++
+	}
+	db.Close()
+    return UsersList, nil
+}
+
+func Login(email, pass string) (string, string, error) {//if success, return token for cookie
 	configuration := config.GetConfig("prod")
 	db, _ := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
 	rows, _ := db.Query(`SELECT idUsuario, name, accountType FROM users WHERE email = '`+email+`' AND pass = '`+pass+`'`)
@@ -49,11 +116,51 @@ func Login(email, pass string) (string, error) {//if success, return token for c
 		affected, _ := result.RowsAffected()
 		if affected == 1 {
 			db.Close()
-			return cryptoTextHashToken, nil
+			return cryptoTextHashToken, accountType, nil
 		}
 	}
 	db.Close()
-	return "", errors.New("email / password does not match")
+	return "", "", errors.New("email / password does not match")
+}
+
+func MatchSMS(number, confirm string) bool {
+	configuration := config.GetConfig("prod")
+	db, err := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
+	if err != nil {
+		return false
+	}
+	rows, err := db.Query(`SELECT confirm FROM sendSMS WHERE number = '`+number+`'`)
+	if err != nil {
+		db.Close()
+		return false
+	}
+	var confirmDB string
+	defer rows.Close()
+	if rows.Next() {
+		rows.Scan(&confirmDB)
+		if confirm == confirmDB {
+			db.Close()
+			return true
+		}
+	}
+	db.Close()
+    return true
+}
+
+func InsertSMS(number, confirm string) bool {
+	configuration := config.GetConfig("prod")
+	db, err := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
+	if err != nil {
+		return false
+	}
+	db.Exec(`DELETE FROM sendSMS WHERE number = '`+number+`'`)
+	currentTime := int64(time.Now().Unix())
+	currentTimeString := strconv.FormatInt(currentTime, 10)		
+	stmtInsertImage, _ := db.Prepare("INSERT sendSMS SET number=?, confirm=?, timestamp=?")
+	stmtInsertImage.Exec(number,confirm,currentTimeString)
+	stmtInsertImage.Close()
+    db.Close()
+    return true
 }
 
 func InsertExistingImage(s3url, idUnsplash string, idUsuario int) bool {

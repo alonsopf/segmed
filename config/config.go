@@ -19,6 +19,7 @@ type Configuration struct {
   SITE_URL  string
   AWS_ID  string
   AWS_SECRET string
+  AWS_BASE_URL string
 }
 
 func GetConfig(params ...string) Configuration {
