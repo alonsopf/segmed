@@ -159,8 +159,6 @@ func InsertUser(name, email, pass string) bool {
 		return false
 	}
 	cryptoTextHash := goutil.ToSha512([]byte(pass))	
-	currentTime := int64(time.Now().Unix())
-	currentTimeString := strconv.FormatInt(currentTime, 10)		
 	stmtInsertUser, _ := db.Prepare("INSERT users SET name=?, email, confirm=?, pass=?, iosToken=?, androidToken=?, accountType=?,cellphone=?,cellphoneVerified=?,hashConfirm=?,hashReset=?,idFacebook=?")
 	stmtInsertUser.Exec(name,email,"1",cryptoTextHash,"","","1","","","","","")
 	stmtInsertUser.Close()
