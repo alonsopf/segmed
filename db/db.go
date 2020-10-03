@@ -6,7 +6,7 @@ import (
 	"time"
 	"errors"
 	"strings"
-	"fmt"
+	
 	goutil "github.com/alonsopf/segmed/goutil"
 	config "github.com/alonsopf/segmed/config"
 )
@@ -20,7 +20,6 @@ func CheckToken(token string) (int, error) {
 	defer rows.Close()
 	if rows.Next() {
 		rows.Scan(&idUsuario)
-		rows.Close()
 		db.Close()
 		return idUsuario, nil
 	}
@@ -30,7 +29,6 @@ func Login(email, pass string) (string, error) {//if success, return token for c
 	configuration := config.GetConfig("prod")
 	db, _ := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
 	rows, _ := db.Query(`SELECT idUsuario, name, accountType FROM users WHERE email = '`+email+`' AND pass = '`+pass+`'`)
-	fmt.Println(`SELECT idUsuario, name, accountType FROM users WHERE email = '`+email+`' AND pass = '`+pass+`'`)
 	defer rows.Close()
 	idUsuario := 0
 	name := ""
@@ -56,4 +54,62 @@ func Login(email, pass string) (string, error) {//if success, return token for c
 	}
 	db.Close()
 	return "", errors.New("email / password does not match")
+}
+
+func InsertExistingImage(s3url, idUnsplash string, idUsuario int) bool {
+	configuration := config.GetConfig("prod")
+	db, err := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
+	if err != nil {
+		return false
+	}
+	currentTime := int64(time.Now().Unix())
+	currentTimeString := strconv.FormatInt(currentTime, 10)		
+	stmtInsertImage, _ := db.Prepare("INSERT savedImages SET UnsplashID=?, idUsuario=?, status=?, s3url=?, likeTime=?")
+	stmtInsertImage.Exec(idUnsplash,idUsuario,"1",s3url,currentTimeString)
+	stmtInsertImage.Close()
+    db.Close()
+    return true
+}
+
+func ChangeStatusLike(Status string, idImage int) bool {
+	configuration := config.GetConfig("prod")
+	db, err := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
+	if err != nil {
+		return false
+	}
+	stmt, _ := db.Prepare("UPDATE savedImages SET status=? WHERE idImage=?")
+    stmt.Exec(Status, idImage)
+    stmt.Close()
+    db.Close()
+    return true
+}
+
+func ExistID(ID string, idUsuario int) (bool, int, string, error) {
+	configuration := config.GetConfig("prod")
+	db, err := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
+	if err != nil {
+		return false, 0, "", err
+	}
+	rows, err := db.Query(`SELECT idImage, s3url FROM savedImages WHERE UnsplashID = '`+ID+`' AND idUsuario = `+strconv.Itoa(idUsuario)
+	if err != nil {
+		db.Close()
+		return false, 0, "", err
+	}
+	var idImage int
+	var s3url string
+	defer rows.Close()
+	if rows.Next() {
+		rows.Scan(&idImage, &s3url)
+		db.Close()
+		return true, idImage, s3url,  nil
+	}
+	rows2, _ := db.Query(`SELECT s3url FROM savedImages WHERE UnsplashID = '`+ID+`'`
+	defer rows2.Close()
+	if rows2.Next() {
+		rows2.Scan(&s3url)
+		db.Close()
+		return true, 0, s3url,  nil
+	}
+	db.Close()
+	return false, 0, "", nil
 }

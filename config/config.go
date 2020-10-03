@@ -17,6 +17,8 @@ type Configuration struct {
   UNSPLASH_ACCESS_KEY string
   UNSPLASH_SECRET_KEY string
   SITE_URL  string
+  AWS_ID  string
+  AWS_SECRET string
 }
 
 func GetConfig(params ...string) Configuration {
