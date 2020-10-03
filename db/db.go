@@ -152,6 +152,22 @@ func MatchSMS(number, confirm string) bool {
     return true
 }
 
+func InsertUser(name, email, pass string) bool {
+	configuration := config.GetConfig("prod")
+	db, err := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
+	if err != nil {
+		return false
+	}
+	cryptoTextHash := goutil.ToSha512([]byte(pass))	
+	currentTime := int64(time.Now().Unix())
+	currentTimeString := strconv.FormatInt(currentTime, 10)		
+	stmtInsertUser, _ := db.Prepare("INSERT users SET name=?, email, confirm=?, pass=?, iosToken=?, androidToken=?, accountType=?,cellphone=?,cellphoneVerified=?,hashConfirm=?,hashReset=?,idFacebook=?")
+	stmtInsertUser.Exec(name,email,"1",cryptoTextHash,"","","1","","","","","")
+	stmtInsertUser.Close()
+    db.Close()
+    return true
+}
+
 func InsertSMS(number, confirm string) bool {
 	configuration := config.GetConfig("prod")
 	db, err := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
