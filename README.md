@@ -10,7 +10,8 @@ go get github.com/alonsopf/segmed
 ```
 2. execute segmed.sql
 3. fill your prod_config.json with your keys and data
-4. ```bash
+4. 
+```bash
 cd $GOPATH/src/github.com/alonsopf/segmed
 ```
 5. go run alonso.go
