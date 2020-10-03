@@ -161,7 +161,7 @@ func InsertUser(name, email, pass string) bool {
 	}
 	cryptoTextHash := goutil.ToSha512([]byte(pass))	
 	stmtInsertUser, _ := db.Prepare("INSERT users SET name=?, email, confirm=?, pass=?, iosToken=?, androidToken=?, accountType=?,cellphone=?,cellphoneVerified=?,hashConfirm=?,hashReset=?,idFacebook=?")
-	_, err := stmtInsertUser.Exec(name,email,"1",cryptoTextHash,"","","1","","","","","")
+	_, err = stmtInsertUser.Exec(name,email,"1",cryptoTextHash,"","","1","","","","","")
 	if err != nil {
 		fmt.Println(err)
 		return false
