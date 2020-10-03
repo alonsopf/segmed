@@ -7,11 +7,14 @@ import (
 	"encoding/json"
 	"net/http"
 	"io"
+	"io/ioutil"
 	"os"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/sfreiberg/gotwilio"
+
 	config "github.com/alonsopf/segmed/config"
 )
 
@@ -191,4 +194,31 @@ func DownloadAndUploadToCloud(filepath string, url string) (string, error) {
 		return "5", err
 	}
 	return fileName , nil
+}
+
+func DownloadAndEncode(urlAWS string) (string, error) {
+	configuration := config.GetConfig("prod")
+	urlComplete := configuration.AWS_BASE_URL+urlAWS
+	resp, err := http.Get(urlComplete)
+	if err != nil {
+		return "0", err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "0", err
+	}
+	return base64.StdEncoding.EncodeToString(body), nil
+}
+
+func SendSMS(message, phone string) (bool, error) {
+	configuration := config.GetConfig("prod")
+	twilio := gotwilio.NewTwilioClient(configuration.TWILIO_ID, configuration.TWILIO_TOKEN)
+	from := configuration.TWILIO_NUMBER
+	to := phone
+	_, _, err := twilio.SendSMS(from, to, message, "", "")				
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
