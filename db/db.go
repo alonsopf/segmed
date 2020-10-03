@@ -40,7 +40,7 @@ func CheckToken(token string) (int, int, error) {
 	return -1, -1, errors.New("token does not exist")
 }
 
-func ListImg(idUsuario string) (*map[int]*Users, error) {
+func ListImg(idUsuario string) (*map[int]*Image, error) {
 	configuration := config.GetConfig("prod")
 	db, err := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
 	if err != nil {
@@ -59,11 +59,11 @@ func ListImg(idUsuario string) (*map[int]*Users, error) {
 	defer rows.Close()
 	if rows.Next() {
 		rows.Scan(&idImage, &s3url, &likeTime)
-		ImageList[count] = &Users{idImage, s3url, likeTime}
+		ImageList[count] = &Image{idImage, s3url, likeTime}
         count++
 	}
 	db.Close()
-    return ImageList, nil
+    return &ImageList, nil
 }
 
 func ListUsers() (*map[int]*Users, error) {
@@ -89,7 +89,7 @@ func ListUsers() (*map[int]*Users, error) {
         count++
 	}
 	db.Close()
-    return UsersList, nil
+    return &UsersList, nil
 }
 
 func Login(email, pass string) (string, string, error) {//if success, return token for cookie
@@ -116,7 +116,7 @@ func Login(email, pass string) (string, string, error) {//if success, return tok
 		affected, _ := result.RowsAffected()
 		if affected == 1 {
 			db.Close()
-			return cryptoTextHashToken, accountType, nil
+			return cryptoTextHashToken, strconv.Itoa(accountType), nil
 		}
 	}
 	db.Close()
