@@ -28,14 +28,19 @@ func CheckToken(token string) (int, int, error) {
 	db, _ := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
 	currentTime := int64(time.Now().Unix())			
 	tm := strconv.FormatInt(currentTime, 10)		
-	rows, _ := db.Query(`SELECT idUsuario, accountType FROM tokens WHERE token = '`+token+`' AND expiredAt >= `+tm)
+	rows, _ := db.Query(`SELECT idUsuario FROM tokens WHERE token = '`+token+`' AND expiredAt >= `+tm)
 	idUsuario := 0
 	accountType := 0
 	defer rows.Close()
 	if rows.Next() {
-		rows.Scan(&idUsuario, &accountType)
-		db.Close()
-		return idUsuario, accountType, nil
+		rows.Scan(&idUsuario)
+		rows2, _ := db.Query(`SELECT accountType FROM users WHERE idUsuario = `+strconv.Itoa(idUsuario)+``)
+		defer rows2.Close()
+		if rows2.Next() {
+			rows2.Scan(&accountType)
+			db.Close()
+			return idUsuario, accountType, nil
+		}
 	}
 	return -1, -1, errors.New("token does not exist")
 }
