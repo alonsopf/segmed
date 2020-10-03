@@ -90,7 +90,7 @@ func ExistID(ID string, idUsuario int) (bool, int, string, error) {
 	if err != nil {
 		return false, 0, "", err
 	}
-	rows, err := db.Query(`SELECT idImage, s3url FROM savedImages WHERE UnsplashID = '`+ID+`' AND idUsuario = `+strconv.Itoa(idUsuario)
+	rows, err := db.Query(`SELECT idImage, s3url FROM savedImages WHERE UnsplashID = '`+ID+`' AND idUsuario = `+strconv.Itoa(idUsuario))
 	if err != nil {
 		db.Close()
 		return false, 0, "", err
@@ -103,7 +103,7 @@ func ExistID(ID string, idUsuario int) (bool, int, string, error) {
 		db.Close()
 		return true, idImage, s3url,  nil
 	}
-	rows2, _ := db.Query(`SELECT s3url FROM savedImages WHERE UnsplashID = '`+ID+`'`
+	rows2, _ := db.Query(`SELECT s3url FROM savedImages WHERE UnsplashID = '`+ID+`'`)
 	defer rows2.Close()
 	if rows2.Next() {
 		rows2.Scan(&s3url)
