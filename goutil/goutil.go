@@ -151,7 +151,7 @@ func uploadFileToS3(s *session.Session, file *os.File, size int64, filepath stri
      StorageClass:         aws.String("INTELLIGENT_TIERING"),
   })
   if err != nil {
-     return "", err
+     return "6", err
   }
   return filepath, err
 }
@@ -160,18 +160,18 @@ func DownloadAndUploadToCloud(filepath string, url string) (string, error) {
 	configuration := config.GetConfig("prod")
 	resp, err := http.Get(url)
 	if err != nil {
-		return "", err
+		return "0", err
 	}
 	defer resp.Body.Close()
 	out, err := os.Create(filepath)
 	if err != nil {
-		return "", err
+		return "1", err
 	}
 	defer out.Close()
 	_, err = io.Copy(out, resp.Body)
 	file, err := os.OpenFile(filepath, os.O_RDWR, 0755)
 	if err != nil {
-		return "", err
+		return "2", err
 	}
 	s, err := session.NewSession(&aws.Config{
 		Region: aws.String("us-west-1"),
@@ -179,16 +179,16 @@ func DownloadAndUploadToCloud(filepath string, url string) (string, error) {
 			configuration.AWS_ID,  configuration.AWS_SECRET ,  ""),  // token can be left blank for now
 	})
 	if err != nil {
-		return "", err
+		return "3", err
 	}
 	fi, err := file.Stat()
 	if err != nil {
-  		return "", err
+  		return "4", err
 	}
 
 	fileName, err := uploadFileToS3(s, file, fi.Size(), filepath)
 	if err != nil {
-		return "", err
+		return "5", err
 	}
 	return fileName , nil
 }
