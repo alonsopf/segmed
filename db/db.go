@@ -22,6 +22,7 @@ type Image struct {
 	IdImage int
     S3url string
     LikeTime string
+    UnsplashID string
 }
 
 func CheckToken(token string) (int, int, error) {
@@ -67,7 +68,7 @@ func ListImg(idUsuario string) (*map[int]*Image, error) {
 	if err != nil {
 		return nil, err
 	}
-	rows, err := db.Query(`SELECT idImage, s3url, likeTime FROM savedImages WHERE idUsuario = `+idUsuario+` AND status = 1 order by idImage asc`)
+	rows, err := db.Query(`SELECT idImage, s3url, likeTime, UnsplashID FROM savedImages WHERE idUsuario = `+idUsuario+` AND status = 1 order by idImage asc`)
 	if err != nil {
 		db.Close()
 		return nil, err
@@ -76,11 +77,12 @@ func ListImg(idUsuario string) (*map[int]*Image, error) {
 	idImage := 0
 	s3url := ""
 	likeTime := ""
+	UnsplashID := ""
 	count := 0
 	defer rows.Close()
 	for rows.Next() {
-		rows.Scan(&idImage, &s3url, &likeTime)
-		ImageList[count] = &Image{idImage, s3url, likeTime}
+		rows.Scan(&idImage, &s3url, &likeTime, &UnsplashID)
+		ImageList[count] = &Image{idImage, s3url, likeTime, UnsplashID}
         count++
 	}
 	db.Close()
