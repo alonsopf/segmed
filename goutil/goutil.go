@@ -6,6 +6,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"io"
+	"os"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	config "github.com/alonsopf/segmed/config"
 )
 
@@ -124,4 +130,65 @@ func SearchPhotosByWord(word, page string) (*map[int]*Photos, error, int , int) 
         count++
     }
 	return &PhotosList, nil, result.Total, result.TotalPages
+}
+
+// UploadFileToS3 saves a file to aws bucket and returns the url to // the file and an error if there's any
+func uploadFileToS3(s *session.Session, file *os.File, size int64, filepath string) (string, error) {
+  buffer := make([]byte, size)
+  file.Read(buffer)	
+  // config settings: this is where you choose the bucket,
+  // filename, content-type and storage class of the file
+  // you're uploading
+  _, err := s3.New(s).PutObject(&s3.PutObjectInput{
+     Bucket:               aws.String("alonsopf-segmed"),
+     Key:                  aws.String(filepath),
+     ACL:                  aws.String("public-read"),
+     Body:                 bytes.NewReader(buffer),
+     ContentLength:        aws.Int64(size),
+     ContentType:        aws.String(http.DetectContentType(buffer)),
+     ContentDisposition:   aws.String("attachment"),
+     ServerSideEncryption: aws.String("AES256"),
+     StorageClass:         aws.String("INTELLIGENT_TIERING"),
+  })
+  if err != nil {
+     return "", err
+  }
+  return filepath, err
+}
+
+func DownloadAndUploadToCloud(filepath string, url string) (string, error) {
+	configuration := config.GetConfig("prod")
+	resp, err := http.Get(url)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	out, err := os.Create(filepath)
+	if err != nil {
+		return "", err
+	}
+	defer out.Close()
+	_, err = io.Copy(out, resp.Body)
+	file, err := os.OpenFile(filepath, os.O_RDWR, 0755)
+	if err != nil {
+		return "", err
+	}
+	s, err := session.NewSession(&aws.Config{
+		Region: aws.String("us-east-2"),
+		Credentials: credentials.NewStaticCredentials(
+			configuration.AWS_ID,  configuration.AWS_SECRET ,  ""),  // token can be left blank for now
+	})
+	if err != nil {
+		return "", err
+	}
+	fi, err := file.Stat()
+	if err != nil {
+  		return "", err
+	}
+
+	fileName, err := uploadFileToS3(s, file, fi.Size(), filepath)
+	if err != nil {
+		return "", err
+	}
+	return fileName , nil
 }
