@@ -174,7 +174,7 @@ func DownloadAndUploadToCloud(filepath string, url string) (string, error) {
 		return "", err
 	}
 	s, err := session.NewSession(&aws.Config{
-		Region: aws.String("us-east-2"),
+		Region: aws.String("us-west-2"),
 		Credentials: credentials.NewStaticCredentials(
 			configuration.AWS_ID,  configuration.AWS_SECRET ,  ""),  // token can be left blank for now
 	})
