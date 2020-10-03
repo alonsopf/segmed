@@ -104,7 +104,7 @@ type Photos struct {
     Status string
 }
 
-func SearchPhotosByWord(word, page string) (*map[int]*Photos, error, int , int) {
+func SearchPhotosByWord(word, page string) (*[]*Photos, error, int , int) {
 	configuration := config.GetConfig("prod")
 	view := "https://api.unsplash.com/search/photos/?per_page=9&page="+page+"&query="+word+"&client_id="+configuration.UNSPLASH_ACCESS_KEY
 	req, err := http.NewRequest("GET", view , nil)
@@ -122,7 +122,7 @@ func SearchPhotosByWord(word, page string) (*map[int]*Photos, error, int , int) 
 	defer resp.Body.Close()
 	s2 := buf2.String()
 	json.Unmarshal([]byte(s2), &result)
-	PhotosList := make(map[int]*Photos)
+	PhotosList := make([]*Photos,0)
 	count := 0
 	var desc string
 	for _, photo := range result.Results {
