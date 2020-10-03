@@ -6,7 +6,7 @@
 # Installation
 1. 
 ```bash
-go get github.com/alonsopf/segmed1. 
+go get github.com/alonsopf/segmed 
 ```
 2. execute segmed.sql
 3. fill your prod_config.json with your keys and data
