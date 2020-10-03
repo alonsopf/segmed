@@ -78,7 +78,7 @@ func ListImg(idUsuario string) (*map[int]*Image, error) {
 	likeTime := ""
 	count := 0
 	defer rows.Close()
-	if rows.Next() {
+	for rows.Next() {
 		rows.Scan(&idImage, &s3url, &likeTime)
 		ImageList[count] = &Image{idImage, s3url, likeTime}
         count++
@@ -104,7 +104,7 @@ func ListUsers() (*map[int]*Users, error) {
 	email := ""
 	count := 0
 	defer rows.Close()
-	if rows.Next() {
+	for rows.Next() {
 		rows.Scan(&idUsuario, &name, &email)
 		UsersList[count] = &Users{idUsuario, name, email}
         count++
