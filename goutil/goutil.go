@@ -16,6 +16,7 @@ import (
 	"github.com/sfreiberg/gotwilio"
 
 	config "github.com/alonsopf/segmed/config"
+	db "github.com/alonsopf/segmed/db"
 )
 
 func ToSha512(str []byte) string {
@@ -101,9 +102,10 @@ type Photos struct {
     AltDescription string
     Likes string
     Photographer string
+    Status string
 }
 
-func SearchPhotosByWord(word, page string) (*map[int]*Photos, error, int , int) {
+func SearchPhotosByWord(word, page string, idUsuario int) (*map[int]*Photos, error, int , int) {
 	configuration := config.GetConfig("prod")
 	view := "https://api.unsplash.com/search/photos/?per_page=9&page="+page+"&query="+word+"&client_id="+configuration.UNSPLASH_ACCESS_KEY
 	req, err := http.NewRequest("GET", view , nil)
@@ -124,12 +126,15 @@ func SearchPhotosByWord(word, page string) (*map[int]*Photos, error, int , int) 
 	PhotosList := make(map[int]*Photos)
 	count := 0
 	var desc string
+	var status string
+	idUsuarioString := strconv.Itoa(idUsuario)
 	for _, photo := range result.Results {
 		desc = ""
 		if photo.Description != nil {
 			desc = photo.Description.(string)
 		}
-		PhotosList[count] = &Photos{photo.ID, photo.Urls.Regular, desc, photo.AltDescription, strconv.Itoa(photo.Likes), photo.User.Name}
+		status, _ := db.CheckStatusForImage(idUsuarioString,photo.ID)
+		PhotosList[count] = &Photos{photo.ID, photo.Urls.Regular, desc, photo.AltDescription, strconv.Itoa(photo.Likes), photo.User.Name, status}
         count++
     }
 	return &PhotosList, nil, result.Total, result.TotalPages
@@ -177,7 +182,7 @@ func DownloadAndUploadToCloud(filepath string, url string) (string, error) {
 		return "2", err
 	}
 	s, err := session.NewSession(&aws.Config{
-		Region: aws.String("us-west-1"),
+		Region: aws.String(configuration.AWS_REGION),
 		Credentials: credentials.NewStaticCredentials(
 			configuration.AWS_ID,  configuration.AWS_SECRET ,  ""),  // token can be left blank for now
 	})

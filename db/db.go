@@ -46,6 +46,21 @@ func CheckToken(token string) (int, int, error) {
 	return -1, -1, errors.New("token does not exist")
 }
 
+func CheckStatusForImage(idUsuario, UnsplashID string) (string, error) {
+	configuration := config.GetConfig("prod")
+	db, _ := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
+	rows, _ := db.Query(`SELECT status FROM savedImages WHERE idUsuario = `+idUsuario+` AND UnsplashID = '`+UnsplashID+`'`)
+	status := "0"
+	defer rows.Close()
+	if rows.Next() {
+		rows.Scan(&status)
+		db.Close()
+		return status, nil
+		
+	}
+	return status, nil
+}
+
 func ListImg(idUsuario string) (*map[int]*Image, error) {
 	configuration := config.GetConfig("prod")
 	db, err := sql.Open("mysql", configuration.DB_USERNAME+":"+configuration.DB_PASSWORD+"@/"+configuration.DB_NAME+"?charset=utf8")
@@ -160,7 +175,7 @@ func InsertUser(name, email, pass string) bool {
 		return false
 	}
 	cryptoTextHash := goutil.ToSha512([]byte(pass))
-	
+
 	stmtInsertUser, err := db.Prepare("INSERT users SET name=?, email=?, confirm=?, pass=?, iosToken=?, androidToken=?, accountType=?, cellphone=?, cellphoneVerified=?, hashConfirm=?, hashReset=?, idFacebook=?")
 	if err != nil {
 		fmt.Println(err)

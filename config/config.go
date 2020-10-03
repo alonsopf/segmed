@@ -20,6 +20,7 @@ type Configuration struct {
   AWS_ID  string
   AWS_SECRET string
   AWS_BASE_URL string
+  AWS_REGION string
 }
 
 func GetConfig(params ...string) Configuration {
