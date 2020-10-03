@@ -1,0 +1,53 @@
+/* Dropzone */
+
+.dropzone {
+  border: 1px solid $border-color;
+  cursor: pointer;
+  height: 200px;
+  .dz-message {
+    text-align: center;
+    width: 100%;
+    span {
+      font-size: .8125rem;
+      color: $body-color;
+    }
+  }
+  &.dz-started {
+    @extend .d-block;
+    height: auto;
+  }
+  .dz-error-message {
+    span {
+      font-size: .625rem;
+      color: theme-color(danger);
+    }
+  }
+  .dz-preview {
+    margin: .5rem;
+    .dz-image {
+      img {
+        width: 40px;
+        height: 40px;
+      }
+    }
+    .dz-success-mark,
+    .dz-error-mark {
+      display: inline-block;
+      svg {
+        width: 30px;
+        height: 30px;
+        margin-top: .5rem;
+      }
+    }
+    .dz-details {
+      .dz-size,
+      .dz-filename {
+        font-size: .875rem;
+      }
+    }
+    + .dz-preview {
+      border-top: 1px solid $border-color;
+      padding-top: .5rem;
+    }
+  }
+}

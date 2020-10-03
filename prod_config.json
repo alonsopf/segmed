@@ -1,0 +1,17 @@
+{
+    "DB_USERNAME": "",/*mysql user*/
+    "DB_PASSWORD": "thanks_God7",/*mysql pass*/
+    "EMAIL": "alonsopf.paypal@gmail.com",/*email, skip */
+    "EMAIL_PASS": "",/*mysql pass, not working for now, skip*/
+    "DB_NAME": "segmed", /*mysql db name*/
+    "TWILIO_ID": "", /*twilio id*/
+    "TWILIO_TOKEN": "",/*twilio token*/
+    "TWILIO_NUMBER": "", /*twilio number, example:  +11234567890*/
+    "UNSPLASH_ACCESS_KEY": "",
+    "UNSPLASH_SECRET_KEY" : "",
+    "SITE_URL": "",/*example.com*/
+    "AWS_ID" :  "",/*amazon web services account id*/
+ 	"AWS_SECRET" : "",/*amazon web services account secret*/
+ 	"AWS_BASE_URL" : "https://alonsopf-segmed.s3-us-west-1.amazonaws.com/",
+ 	"AWS_REGION" : ""/*aws region, example: us-west-1/
+}
