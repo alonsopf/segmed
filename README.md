@@ -16,6 +16,14 @@ cd $GOPATH/src/github.com/alonsopf/segmed
 ```
 5. go run alonso.go
 6. test in:  yoururl.com/segmed.ai/
-7. default user: alonsopf.paypal@gmail.com  /  segmedai
+7. default user: alonsopf@gmail.com  /  segmedai
 8. default admin user: adam@segmed.ai  /  segmedai
 9. Example in: [https://alonsopf.com/segmed.ai/](https://alonsopf.com/segmed.ai/)
+
+NOTE: I used mysql_native_password, so this is needed:
+```bash
+CREATE USER 'usersegmed'@'localhost' IDENTIFIED BY 'mypass';
+
+GRANT ALL PRIVILEGES ON segmed.* TO 'usersegmed'@'localhost';
+ALTER USER 'usersegmed'@'localhost' IDENTIFIED WITH mysql_native_password BY 'mypass';
+```
